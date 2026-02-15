@@ -1,4 +1,4 @@
-# Indrasevendev
+# Indraseven
 
 Developer.
 
@@ -30,3 +30,7 @@ Learning in public.
 ## Projects
 All projects are built step by step.
 No shortcuts.
+
+---
+
+> Building quietly.
