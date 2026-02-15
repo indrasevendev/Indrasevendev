@@ -1,16 +1,32 @@
-# Indrasevendev
+# Indra
 
-Developer focused on building consistently.
+Developer.
+
+Focused on consistency.
+
+---
+
+## About
+Self-taught.
+Building from fundamentals.
+Learning in public.
 
 ---
 
 ## Current Focus
-- Python fundamentals
+- Python
 - Git & version control
-- Terminal workflow
+- Terminal-based workflow
 
 ---
 
-## Philosophy
-Small progress every day.
-Consistency over motivation.
+## Principles
+- Small improvements daily
+- Write clean code
+- Understand before using
+
+---
+
+## Projects
+All projects are built step by step.
+No shortcuts.
