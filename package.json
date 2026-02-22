@@ -1,21 +1,41 @@
 {
   "name": "indrasevendev",
   "version": "1.0.0",
-  "description": "---",
-  "main": "index.js",
+  "description": "Professional Termux-API Suite & Web3 Identity Hub",
+  "main": "server.js",
+  "bin": {
+    "termux-dev": "./termux-api/server.js"
+  },
   "scripts": {
+    "start": "node server.js",
+    "dashboard": "node dashboard.js",
+    "spy": "node spy-shot.js",
+    "sos": "node sos.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "termux",
+    "node-js",
+    "automation",
+    "web3",
+    "indraseven",
+    "ethereum"
+  ],
+  "author": "indraseven.eth <indracryptoid.base.eth>",
+  "license": "MIT",
+  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/indrasevendev/Indrasevendev.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/indrasevendev/Indrasevendev/issues"
   },
-  "homepage": "https://github.com/indrasevendev/Indrasevendev#readme"
+  "homepage": "https://github.com/indrasevendev/Indrasevendev#readme",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "express": "^4.22.1"
+  }
 }
