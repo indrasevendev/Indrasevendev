@@ -16,3 +16,10 @@ A web-based dashboard to monitor your **Base Ecosystem** wallet and control your
 1. **Install Termux API**:
    ```bash
    pkg install termux-api
+
+2. Setup .env: Create a .env file (do NOT push to GitHub!) with:
+ALCHEMY_RPC_URL=your_rpc_url
+MY_WALLET=0x...
+MY_BASENAME=indracryptoid.base.eth
+
+3. Run: node server.js then access localhost:3000.
