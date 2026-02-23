@@ -1,56 +1,33 @@
+const { ethers } = require('ethers');
 require('dotenv').config();
-const express = require('express');
-const { exec } = require('child_process');
-const web3 = require('./modules/web3');
-const app = express();
 
-let lastBalance = null;
+// Gunakan RPC Mainnet dari .env yang baru dirapikan
+const provider = new ethers.JsonRpcProvider(process.env.RPC_BASE_MAINNET);
 
-// Halaman Utama
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/dashboard.html');
-});
+// Alamat Kontrak USDC di Base Mainnet
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const walletAddress = process.env.MY_WALLET;
 
-// API Status
-app.get('/api/status', async (req, res) => {
-    try {
-        const walletData = await web3.getWalletStatus(process.env.MY_WALLET);
-        exec('termux-battery-status', (error, stdout) => {
-            let battery = "N/A";
-            if (!error) { battery = JSON.parse(stdout).percentage + "%"; }
-            res.json({
-                device: { battery },
-                blockchain: {
-                    ...walletData,
-                    basename: process.env.MY_BASENAME,
-                    address: process.env.MY_WALLET
-                }
-            });
-        });
-    } catch (err) { res.json({ success: false }); }
-});
-
-// Auto Monitor Wallet
-async function monitorWallet() {
-    try {
-        const walletData = await web3.getWalletStatus(process.env.MY_WALLET);
-        const currentBalance = parseFloat(walletData.balance);
-        if (lastBalance === null) { lastBalance = currentBalance; return; }
-        
-        if (currentBalance > lastBalance) {
-            exec('termux-vibrate -d 1000 && termux-notification -c "ETH Masuk!" --sound');
-            lastBalance = currentBalance;
-        }
-    } catch (e) { console.log("Monitor silent..."); }
+async function getStats() {
+    const ethBalance = await provider.getBalance(walletAddress);
+    
+    // Logic untuk ambil saldo USDC (3 USDC Anda)
+    const usdcContract = new ethers.Contract(USDC_ADDRESS, [
+        "function balanceOf(address) view returns (uint256)"
+    ], provider);
+    
+    const usdcBalance = await usdcContract.balanceOf(walletAddress);
+    
+    return {
+        eth: ethers.formatEther(ethBalance),
+        usdc: ethers.formatUnits(usdcBalance, 6) // USDC pakai 6 desimal
+    };
 }
-setInterval(monitorWallet, 15000);
 
-// Command Center
-app.get('/api/vibrate', (req, res) => { exec('termux-vibrate -d 500'); res.json({ok:1}); });
-app.get('/api/torch', (req, res) => { 
-    exec(`termux-torch ${global.tOn ? 'off' : 'on'}`); 
-    global.tOn = !global.tOn; res.json({ok:1}); 
-});
-
-app.listen(3000, () => console.log('Server lari di port 3000'));
+getStats().then(stats => {
+    console.log("=== Real-time Balance Monitor ===");
+    console.log(`ETH Balance: ${stats.eth} ETH`);
+    console.log(`USDC Balance: ${stats.usdc} USDC`);
+    console.log("================================");
+}).catch(err => console.error("Error fetching balance:", err));
 
