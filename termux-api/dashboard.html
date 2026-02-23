@@ -63,6 +63,23 @@
         }
 
         .base-logo { color: var(--base-blue); font-weight: 800; }
+            #basename-display {
+            text-shadow: 0 0 10px rgba(0, 82, 255, 0.3);
+            background: linear-gradient(90deg, #0052ff, #5fffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #basename-display {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #0052ff, #5fffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 82, 255, 0.2);
+        letter-spacing: -0.5px;
+        }
+
     </style>
 </head>
 <body>
@@ -73,11 +90,21 @@
         <span class="value" id="device">Syncing...</span>
         <small style="color: var(--text-dim)"><span class="status-dot"></span> System Live</small>
     </div>
-
+   
     <div class="card">
-        <h3>🔗 Network: Base Sepolia</h3>
+    <h3>🔗 Base Ecosystem</h3>
+    <div style="margin: 15px 0;">
+        <span id="basename-display" style="color: var(--base-blue); font-weight: 800; font-size: 1.1rem; display: block; letter-spacing: 0.5px;">
+            indracryptoid.base.eth
+        </span>
+        <small id="eth-address" style="color: var(--text-dim); font-family: monospace; font-size: 0.75rem;">
+            0xC9aC...4b80
+        </small>
+    </div>
+    
+    <div style="border-top: 1px solid #222; padding-top: 15px; margin-top: 10px;">
         <span class="value" id="balance">0.0000 ETH</span>
-        <small id="wallet" style="color: var(--base-blue)">indraseven.eth</small>
+        <small style="color: var(--text-dim)">Current Balance</small>
     </div>
 
     <div class="card">
@@ -85,36 +112,53 @@
         <span class="value" id="block">#000000</span>
     </div>
 
+    <div class="card">
+    <h3>🛠️ Command Center</h3>
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button onclick="sendCommand('vibrate')" style="background: var(--base-blue); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; flex: 1;">📳 Vibrate</button>
+        <button onclick="sendCommand('torch')" style="background: #333; color: white; border: 1px solid var(--base-blue); padding: 10px; border-radius: 8px; cursor: pointer; flex: 1;">🔦 Toggle Torch</button>
+    </div>
+
     <script>
-    async function updateStats() {
-        try {
-            const res = await fetch('/api/status');
-            const data = await res.json();
-            
-            // Update Baterai & Nama Device
-            document.getElementById('device').innerText = `Battery: ${data.device.battery}`;
-            
-            if (data.blockchain && data.blockchain.success) {
-                // Tampilkan saldo & block asli
-                document.getElementById('balance').innerText = data.blockchain.balance + " ETH";
-                document.getElementById('block').innerText = "#" + data.blockchain.block;
+        async function updateStats() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
                 
-                // PENTING: Menampilkan Basename Anda dari Persona
-                // Pastikan Anda punya elemen dengan id="wallet-name" di HTML atas
-                const walletEl = document.getElementById('wallet-name');
-                if (walletEl) walletEl.innerText = "indracryptoid.base.eth";
+                // Update Baterai
+                document.getElementById('device').innerText = `Battery: ${data.device.battery}`;
+                
+                if (data.blockchain && data.blockchain.success) {
+                    document.getElementById('basename-display').innerText = data.blockchain.basename;
+                    document.getElementById('balance').innerText = data.blockchain.balance + " ETH";
+                    document.getElementById('block').innerText = "#" + data.blockchain.block;
+                    
+                    // Update Alamat terpotong
+                    const addr = data.blockchain.address || "";
+                    if(addr) {
+                        document.getElementById('eth-address').innerText = `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+                    }
+                }
+            } catch (e) {
+                console.error("Gagal update stats:", e);
             }
-        } catch (e) {
-            console.error("Gagal sinkronisasi data:", e);
         }
-    }
 
-    // Refresh otomatis setiap 5 detik
-    setInterval(updateStats, 5000);
-    // Jalankan sekali saat pertama kali buka
-    updateStats();
-</script>
+        async function sendCommand(type) {
+            try {
+                const res = await fetch(`/api/${type}`);
+                const data = await res.json();
+                console.log(`Command ${type} executed:`, data);
+            } catch (e) {
+                console.error("Gagal kirim perintah:", e);
+            }
+        }
 
+        // Jalankan update setiap 5 detik
+        setInterval(updateStats, 5000);
+        // Jalankan sekali saat pertama kali buka
+        updateStats();
+    </script>
 </body>
 </html>
 
